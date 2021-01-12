@@ -1,0 +1,4 @@
+from controllers.MenuPage import MenuPage
+from controllers.TestCatalogPage import TestCatalogPage
+from controllers.TestCreatePage import TestCreatePage
+from controllers.StartTestPage import StartTestPage
