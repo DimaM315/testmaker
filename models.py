@@ -16,27 +16,26 @@ def get_root_settings(tk_obj):
 
 
 # methods for test manipulate
-
 def prepare_save(text):
-	# удаление /n
-	text = ''.join(text.split('\n'))
+	# удаляем non_symb с начала и конца, меняем все заглавные буквы на строчные
+	assert isinstance(text, str) and len(text) > 2, 'Uncorrectable arguments got prepare_save'
+
+	text = text.replace('\n', '')
 	
-	# удаляем non_symb с начала и конца коммента,
-	# меняем все заглавные буквы на строчные
 	non_symb = '/!$%;>-<@#'
-	ex = ''
+	prepared_text = ''
 	
-	while text[0] in non_symb+" ":
+	while text[0] in non_symb + " ":
 		text = text[1:]
-	while text[len(text)-1] in non_symb+" ":
-		text = text[:len(text)-1]
+	while text[-1] in non_symb + " ":
+		text = text[:-1]
 
 	for i in range(len(text)):
 		if (text[i] == ' ' and text[i+1] == ' ') or text[i] in non_symb:
 			continue
-		ex += text[i]
+		prepared_text += text[i]
 
-	return ex.lower()
+	return prepared_text.lower()
 
 
 def save_test(title, question_list, answer_list, left_answer='!!!'):
@@ -72,14 +71,14 @@ def save_test(title, question_list, answer_list, left_answer='!!!'):
 		title=title, question=q_str, answer=a_str, left_answer=l_str
 	)
 
-	#with open(FILE_DB, 'a', encoding='utf-8') as file:
-	#	file.write('\n\n\n'+test_str)
-
+	with open(FILE_DB, 'a', encoding='utf-8') as file:
+		file.write('\n\n\n' + test_str)
 	return True
 
 
 def load_tests(title='none'):
 	assert isinstance(title, str), 'title должно быть строкой'
+	assert len(title) > 3, 'Передана слишком короткая длинна теста'
 
 	# если title='none' вернёт все тесты, 
 	# если конкретный будет путаться найти и вернуть только его
@@ -102,13 +101,48 @@ def load_tests(title='none'):
 		return 'Тест - {name} не найден'.format(name=title)
 
 	return tests_list	
+
+
+def del_test(title):
+	# функция полностью переписывает test_storage.txt, но без теста с именем title
+	tests = load_tests()
+	tests_data = []
+
+	for i in range(len(tests)-1):
+		if tests[i][0] == title:
+			tests.remove(tests[i])
+			continue
+		tests_data.append('{0}\n{1}\n{2}\n{3}'.format(tests[i][0],
+										'--!--'.join(tests[i][1]),
+										'--!--'.join(tests[i][2]),
+										'--!--'.join(tests[i][3]) if tests[i][3] != '!!!' else '!!!'))
 	
+	with open(FILE_DB, 'w', encoding='utf-8') as file:
+		file.write('\n\n\n'.join(tests_data))
 	
 
-if __name__ == '__main__':
-	print(load_tests('g'))
-	#print(save_test('New_Test', 
-				#	['How are\n\n yo\nu?', '  Where are you from?  ', '  How!!! long you jump?', 'What did you read?'], 
-				#	['18 years old!', 'I am from PS!', '  My jump is 20m    long!', 'I wa  s read book!'],
-				#	['In PSJ??>', 'WTF?']))
+# methods for test copmilete
+def get_variants_list(answer, from_choose):
+	assert isinstance(answer, str) and len(answer) > 2,\
+					"Функция get_variants_list, вызвана без корректного ответа"
+	assert isinstance(from_choose, list) and len(from_choose) > 3, \
+					"Функция get_variants_list, вызвана без корректного from_choose"
 	
+	variants_answer = [answer] + [0]*2 
+
+	while 0 in variants_answer:
+		for i in (1,2):
+			rand_pos = randint(0, len(from_choose)-1)	
+			variants_answer[i] = from_choose[rand_pos] if from_choose[rand_pos] not in variants_answer else 0
+
+	# MIXing of List
+	rand_pos = randint(0, 2)
+	variants_answer[0], variants_answer[rand_pos] = variants_answer[rand_pos], variants_answer[0]
+
+	return variants_answer
+
+if __name__ == '__main__':
+	print(prepare_save('  @@#21fskdlf; !33d  '))
+	print(prepare_save(' fff  '))
+	print(prepare_save('\ngfdgd\nfd\n'))
+	print(prepare_save(''))

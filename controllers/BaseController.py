@@ -1,4 +1,5 @@
 class BasePage:
+
 	def __init__(self, root):
 		self.root = root # tk main instance
 
@@ -14,20 +15,14 @@ class BasePage:
 	def __hidden(self):
 		# функция скрывает все виджеты старницы. "страница сварачивается"
 		for widget in self.widgets:
-			#if isinstance(widget, list):
-				# значит мы работает с frame. Он на позиции 0
-				#widget[0][0].place_forget() # widget здесь list
-			#else:
 			widget[0].place_forget()
+
 
 	def __active(self):
 		# функция отображает все виджеты старницы. "страница разварачивается"
 		for widget in self.widgets:
-			#if isinstance(widget, list):
-				# значит мы работает с frame. Он на позиции 0
-				#widget[0][0].place(x=widget[0][1], y=widget[0][2]) # widget здесь list
-			#else:
 			widget[0].place(x=widget[1], y=widget[2])
+
 
 	def __setattr__(self, key, value):
 		if key == 'status' and 'status' in self.__dict__:
