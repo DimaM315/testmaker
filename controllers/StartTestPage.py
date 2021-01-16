@@ -42,7 +42,8 @@ class StartTestPage(BasePage):
 
 		# write(wr) mode`s wdg
 		self.frm_widgets.append((Entry(self.frm, width=25), 10, 70))
-		self.frm_widgets.append((Button(self.frm, text='Done!', bg=YELLOW, command=self.handler_wr_btn), 210, 70))
+		self.frm_widgets.append(
+			(Button(self.frm, text='Done!', bg=YELLOW, command=self.handler_wr_btn), 210, 70))
 
 		# choose(ch) mode`s wdg
 		for i in range(3):
@@ -66,7 +67,7 @@ class StartTestPage(BasePage):
 
 
 	def finish_test(self):
-		messagebox.showinfo('Results', "Game over, right answer: {0}/{1}".format(self.greats, self.step))
+		messagebox.showinfo(f'Results', f"Game over, right answer: {self.greats}/{self.step}")
 		self.sub_widget_visible('off')
 
 		self.step = 0
@@ -81,7 +82,7 @@ class StartTestPage(BasePage):
 			return True
 
 		self.cople = self.get_cople()
-		self.frm_widgets[0][0]['text'] = '{0}. Ans#{1} {2}'.format(self.test['title'], self.step+1, self.cople[0])
+		self.frm_widgets[0][0]['text'] = f"{self.test['title']}. Ans#{self.step+1} {self.cople[0]}"
 
 		if self.test['left'] != '!!!': 
 			self.ch_mode_func()
@@ -99,14 +100,9 @@ class StartTestPage(BasePage):
 	# вспомогательные функции
 	def sub_widget_visible(self, status):
 		# status : 'on' - active or 'off' - hidden
-		if self.test['left'] == '!!!':
-			for widget in self.frm_widgets[1:3]:
-				if status == 'on':
-					widget[0].place(x=widget[1], y=widget[2])
-				elif status == 'off':
-					widget[0].place_forget()
-			return True
-		for widget in self.frm_widgets[3:]:
+		sub_widget = self.frm_widgets[1:3] if self.test['left'] == '!!!' else self.frm_widgets[3:]
+		
+		for widget in sub_widget:
 			if status == 'on':
 				widget[0].place(x=widget[1], y=widget[2])
 			elif status == 'off':

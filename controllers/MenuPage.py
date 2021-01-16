@@ -25,12 +25,8 @@ class MenuPage(BasePage):
 		self.widgets.append(
 			(Button(self.root, text='Chose test', bg=YELLOW, command=self.to_catalog_page), 140, 200)) 
 		self.widgets.append(
-			(Button(self.root, text='Exit', bg=RED, command=self.exit), 140, 300))
+			(Button(self.root, text='Exit', bg=RED, command=self.root.destroy), 140, 300))
 		# set common attr
 		for widget in self.widgets:
 			widget[0]['font'] = 'Consolas 13'
 			widget[0]['width'] = 15
-
-
-	def exit(self):
-		self.root.destroy()

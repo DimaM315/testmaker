@@ -70,11 +70,11 @@ class TestCreatePage(BasePage):
 			btn = self.wdg_first_act.pop()[0] # берём инстанс
 
 		self.wdg_first_act.append((
-			Label(frm, text="Ques#{0}: ".format(num)), 20, y))
+			Label(frm, text=f"Ques#{num}: "), 20, y))
 		self.wdg_first_act.append((
 			Entry(frm, width=15), 90, y))
 		self.wdg_first_act.append((
-			Label(frm, text="Ans#{0}: ".format(num)), 200, y))
+			Label(frm, text=f"Ans#{num}: "), 200, y))
 		self.wdg_first_act.append((
 			Entry(frm, width=15), 260, y))
 		self.wdg_first_act.append([

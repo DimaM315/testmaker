@@ -20,16 +20,11 @@ def prepare_save(text):
 	# удаляем non_symb с начала и конца, меняем все заглавные буквы на строчные
 	assert isinstance(text, str) and len(text) > 2, 'Uncorrectable arguments got prepare_save'
 
-	text = text.replace('\n', '')
+	text = text.replace('\n', '').strip()
 	
 	non_symb = '/!$%;>-<@#'
 	prepared_text = ''
 	
-	while text[0] in non_symb + " ":
-		text = text[1:]
-	while text[-1] in non_symb + " ":
-		text = text[:-1]
-
 	for i in range(len(text)):
 		if (text[i] == ' ' and text[i+1] == ' ') or text[i] in non_symb:
 			continue
@@ -53,10 +48,9 @@ def save_test(title, question_list, answer_list, left_answer='!!!'):
 	# обработка текста перед сохранением
 	for i in range(len(question_list)):
 		question_list[i] = prepare_save(question_list[i])
-		# если последний символ каждого вопроса не ?, добавляем его в конец 
-		if question_list[i][len(question_list[i])-1] != '?':
-			question_list[i] += '?'
 		answer_list[i] = prepare_save(answer_list[i])
+		question_list[i] += '?' if question_list[i][-1] != '?' else ''
+		
 		
 	if left_answer != '!!!':
 		for i in range(len(left_answer)):
@@ -98,7 +92,7 @@ def load_tests(title='none'):
 			return tests_list[i]
 
 	if title != 'none':
-		return 'Тест - {name} не найден'.format(name=title)
+		return f'Тест - {title} не найден'
 
 	return tests_list	
 
@@ -142,7 +136,5 @@ def get_variants_list(answer, from_choose):
 	return variants_answer
 
 if __name__ == '__main__':
-	print(prepare_save('  @@#21fskdlf; !33d  '))
-	print(prepare_save(' fff  '))
-	print(prepare_save('\ngfdgd\nfd\n'))
-	print(prepare_save(''))
+	pass
+	#print(save_test('title', ['que1','que2','que3'], ['ans1','ans2','ans3']))

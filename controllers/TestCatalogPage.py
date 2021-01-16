@@ -49,8 +49,7 @@ class TestCatalogPage(BasePage):
 			for widget in reversed(self.widgets):
 				# удаляем с конца все виджеты ряда(виджеты теста по которому кликнули)
 				if widget[2] == btn_y:
-					self.del_widget(widget)
-					
+					self.delete_widget(widget)		
 					if widget[0]['text'] in self.tests_name:
 						test_title = widget[0]['text']
 						self.delete_test(test_title)
@@ -98,7 +97,7 @@ class TestCatalogPage(BasePage):
 			self.widgets.append([btn, x, y])
 
 	# вспомогательные функции
-	def del_widget(self, widget_data):
+	def delete_widget(self, widget_data):
 		# widget_data - tuple from self.widgets
 		assert len(widget_data) == 3 , 'Неправильная widget_data в func: del_widget'
 		
