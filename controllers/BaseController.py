@@ -12,6 +12,10 @@ class BasePage:
 		self.widgets = [] 
 
 
+	def widgets_setup(self):
+		raise NotImplementedError
+
+
 	def __hidden(self):
 		# функция скрывает все виджеты старницы. "страница сварачивается"
 		for widget in self.widgets:
