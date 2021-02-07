@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 
 from controllers.BaseController import BasePage
-from models import save_test, prepare_save
+from models import save_test
 from settings import YELLOW, BLUE, RED
 
 

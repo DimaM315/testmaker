@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 
 from controllers.BaseController import BasePage
-from models import load_tests, del_test
+import db
 from settings import YELLOW, BLUE, RED
 
 
@@ -14,7 +14,7 @@ class TestCatalogPage(BasePage):
 
 	def __init__(self, root, to_menu_page, to_start_test_page):
 		super().__init__(root)
-		self.tests_name = [test[0] for test in load_tests()]
+		self.tests_name = [test[0] for test in db.get_test(get_all=True)]
 		# подсказка в верхней части страницы
 		self.prompt_text = 'Click to test-name for start test'
 
@@ -63,12 +63,12 @@ class TestCatalogPage(BasePage):
 	def delete_test(self, title):
 		# удаляем title из памяти объекта
 		self.tests_name.remove(title)
-		del_test(title)
+		db.delete_test(title)
 
 
 	def page_rander(self):
 		# при удалении теста, тесты находящиеся под ним, нужно сдвинуть вверх
-		for widget, i in enumerate(self.widgets[2:]):
+		for i, widget  in enumerate(self.widgets[2:]):
 			# update y
 			y = 70 * (i//3 + 1.5)
 			widget[2] = y 
@@ -77,7 +77,7 @@ class TestCatalogPage(BasePage):
 
 	def check_new_test(self):
 		# если пользователь до перехода в Каталог, создал тест. Он уже должен отображаться
-		new_titles =  [test[0] for test in load_tests()]
+		new_titles =  [test[0] for test in db.get_test(get_all=True)]
 		if len(self.tests_name) < len(new_titles):
 			# появился новый тестs
 			for title in new_titles:

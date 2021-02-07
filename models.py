@@ -1,6 +1,7 @@
 from random import randint
 
 from settings import *
+import db
 
 
 def get_root_settings(tk_obj):
@@ -22,7 +23,7 @@ def prepare_save(text):
 
 	text = text.replace('\n', '').strip()
 	
-	non_symb = '/!$%;>-<@#'
+	non_symb = '/!$%;>\'\"-<@#'
 	prepared_text = ''
 	
 	for i in range(len(text)):
@@ -56,63 +57,14 @@ def save_test(title, question_list, answer_list, left_answer='!!!'):
 		for i in range(len(left_answer)):
 			left_answer[i] = prepare_save(left_answer[i])
 	
-	# превращаем эти массивы в текст для БД
+	# превращаем эти массивы в строки для БД
 	q_str = '--!--'.join(question_list)
 	a_str = '--!--'.join(answer_list)
 	l_str = '--!--'.join(left_answer) if left_answer != '!!!' else '!!!'
 	
-	test_str = '{title}\n{question}\n{answer}\n{left_answer}'.format(
-		title=title, question=q_str, answer=a_str, left_answer=l_str
-	)
+	db.add_test(title, q_str, a_str, l_str)
 
-	with open(FILE_DB, 'a', encoding='utf-8') as file:
-		file.write('\n\n\n' + test_str)
 	return True
-
-
-def load_tests(title='none'):
-	assert isinstance(title, str), 'title должно быть строкой'
-	assert len(title) > 3, 'Передана слишком короткая длинна теста'
-
-	# если title='none' вернёт все тесты, 
-	# если конкретный будет путаться найти и вернуть только его
-	with open(FILE_DB, 'r', encoding='utf-8') as file:
-		data = file.read()
-	
-	tests_list = []
-	for test in data.split('\n\n\n'):
-		tests_list.append([*test.split('\n')])
-
-	for i in range(len(tests_list)):
-		tests_list[i][1] = tests_list[i][1].split('--!--')
-		tests_list[i][2] = tests_list[i][2].split('--!--')
-		if tests_list[i][3] != '!!!':
-			tests_list[i][3] = tests_list[i][3].split('--!--')
-		if title == tests_list[i][0]:
-			return tests_list[i]
-
-	if title != 'none':
-		return f'Тест - {title} не найден'
-
-	return tests_list	
-
-
-def del_test(title):
-	# функция полностью переписывает test_storage.txt, но без теста с именем title
-	tests = load_tests()
-	tests_data = []
-
-	for i in range(len(tests)-1):
-		if tests[i][0] == title:
-			tests.remove(tests[i])
-			continue
-		tests_data.append('{0}\n{1}\n{2}\n{3}'.format(tests[i][0],
-										'--!--'.join(tests[i][1]),
-										'--!--'.join(tests[i][2]),
-										'--!--'.join(tests[i][3]) if tests[i][3] != '!!!' else '!!!'))
-	
-	with open(FILE_DB, 'w', encoding='utf-8') as file:
-		file.write('\n\n\n'.join(tests_data))
 	
 
 # methods for test copmilete

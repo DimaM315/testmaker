@@ -2,7 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 
 from controllers.BaseController import BasePage
-from models import load_tests, get_variants_list
+from models import get_variants_list
+import db
 from settings import YELLOW, BLUE, RED, prg_bg
 
 
@@ -58,7 +59,7 @@ class StartTestPage(BasePage):
 			self.to_catalog_page()
 			return True
 		
-		test_data = load_tests(title_test)
+		test_data = db.get_test(title_test)
 		self.test = {'title': test_data[0], 'questions': test_data[1], 
 					'answers': test_data[2], 'left': test_data[3]}
 

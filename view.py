@@ -1,5 +1,5 @@
 import controllers as c
-from models import load_tests
+
 
 class View:
 	"""docstring for View

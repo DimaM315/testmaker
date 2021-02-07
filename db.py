@@ -1,68 +1,90 @@
 import sqlite3
 
 
+def db_connect(query):
+	with sqlite3.connect('db/db_test.db') as db:
+		cursor = db.cursor()
+		responce = cursor.execute(query)
+		db.commit()
+	return responce
+
+
+def drop_table_test():
+	query = """ DROP TABLE test """
+	db_connect(query)
+
+
 def create_table_test():
 	# создаём таблицу с тестами
 	# т.к таблица нужна всего одна для каждого теста, хардкодим ее
 
-	with sqlite3.connect('db/db_test.db') as db:
-		cursor = db.cursor()
-		query = """ CREATE TABLE IF NOT EXISTS test(
+	query = """ CREATE TABLE IF NOT EXISTS test(
 				id INTEGER,
-				title TEXT, 
-				question TEXT, 
-				answer TEXT, 
-				left_answer TEXT,
-				last_results TEXT) """
-
-		cursor.execute(query)
+				title TEXT NOT NULL, 
+				question TEXT NOT NULL, 
+				answer TEXT NOT NULL, 
+				left_answer TEXT NOT NULL,
+				last_results TEXT DEFAULT 'None',
+				PRIMARY KEY (ID) ) """
+	db_connect(query)
 
 
 def add_test(title, question, answer, left_answer='!!!'):
-	with sqlite3.connect('db/db_test.db') as db:
-		cursor = db.cursor()
-		query = """ 
-				INSERT INTO test ( id, title, question, answer, left_answer, last_results) 
-				VALUES ( 2, '{0}', '{1}', '{2}', '{3}', 'None')
-				 """.format(title, question, answer, left_answer)
-
-		cursor.execute(query)
-		# cursor.executemany(
-		#		"INSERT INTO test VALUES (?,?,?, ?,?,?)", 
-		#	 	[(2, title, question, answer, left_answer, 'None')]
-		# ) функция принимает запрос и список картежей с данными, где картеж - строка в таблице
-		db.commit()
+	query = """ 
+				INSERT INTO test (title, question, answer, left_answer) 
+				VALUES ('{0}', '{1}', '{2}', '{3}')
+			 """.format(title, question, answer, left_answer)
+	db_connect(query)
 
 
-def get_test():
-	with sqlite3.connect('db/db_test.db') as db:
-		cursor = db.cursor()
+def get_test(test_title='', get_all=False):
+	assert len(test_title) > 3 or get_all, 'Передана слишком короткая длинна теста'
+	assert isinstance(test_title, str), 'title должно быть строкой'
+
+	if get_all:
 		query = """ SELECT * FROM test """
-		data = cursor.execute(query)
-		print(data.fetchall())
-		db.commit()
+	else:
+		query = """ SELECT * FROM test WHERE title='{0}' """.format(test_title)
+
+	responce = db_connect(query)
+	
+	if responce:
+		data = responce.fetchall()
+		tests_list = []
+		for test in data:
+			test = [test[1], test[2].split('--!--'), test[3].split('--!--'), test[4].split('--!--')]
+			if test[3][0] == '!!!':
+				test[3] = '!!!'
+			if not get_all:
+				return test
+			tests_list.append(test)
+
+		return tests_list
+
+	return 500
 
 
 def delete_test(test_title):
-	if not test_id:
+	if not test_title:
 		print('Введите title теста')
 		return False
 
-	with sqlite3.connect('db/db_test.db') as db:
-		cursor = db.cursor()
-		query = """ DELETE FROM test WHERE title={0}""".format(test_title)
-		cursor.execute(query)
-		db.commit()
+	query = """ DELETE FROM test WHERE title='{0}' """.format(test_title)
+	db_connect(query)
 
 
 
 if __name__ == '__main__':
-	#add_test(
-	#		'Main test', 
-	#		'Вопрос1--!--Вопрос2--!--Вопрос3--!--Вопрос4--!--Вопрос5--!--Вопрос6',
-	#		'Ответ1--!--Ответ2--!--Ответ3--!--Ответ4--!--Ответ5--!--Ответ6'
-	#	)
+	#create_table_test()
+	#print(add_test(
+	#		'1111', 
+	#		'113213--!--hhс2--!--nnс3',
+	#		'0000--!--66662--!--113'
+	#	))
 
-	#delete_test(1)
+	delete_test('1111')
 
-	get_test()
+	
+	#drop_table_test()
+	tests = get_test(get_all=True)
+	print(tests)
